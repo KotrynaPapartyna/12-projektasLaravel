@@ -26,7 +26,7 @@ class CompanyController extends Controller
      */
     public function create()
     {
-        //
+        return view("company.create");
     }
 
     /**
@@ -41,8 +41,7 @@ class CompanyController extends Controller
         //ivesti kompanja su vienu klientu x
         //ivesti kompanija su n+1 klientu x
 
-        $clientsNew = $request->clientsNew;
-
+        $clientsNew = $request->clientsNew; //checkbox Add Clients?
         $company = new Company;
         $company->title = $request->companyTitle;
         $company->description = $request->companyDescription;
@@ -50,11 +49,16 @@ class CompanyController extends Controller
 
         $company->save();
 
-        $kiekNorimeIvesti = 1;
+        // $kiekNorimeIvesti = 1;
+        // $request->clientName  - //kiek elementu turi sis masyvas?
+        $clientsInputCount = count($request->clientName);
+        // $clientsInputCount = count($request->clientDescription);
+        // $clientsInputCount = count($request->clientAddress);
+
 
         if($clientsNew == "1") {
 
-            for($i = 0 ; $i = $kiekNorimeIvesti ; $i++) {
+            for($i = 0 ; $i < $clientsInputCount ; $i++) {
                 $client = new Client;
                 $client->name = $request->clientName[$i];
                 $client->surname = $request->clientSurname[$i];
@@ -75,9 +79,11 @@ class CompanyController extends Controller
      */
     public function show(Company $company)
     {
-        $clients = $company->companyClients;
+        $clients = $company->companyClients; //masyvas su visais klientais priklausanciais kompanijai
+        $clientsCount = $clients->count();
         //visi klientai priklausantys kompanijai
-        return view("company.show",['company' => $company, 'clients'=>$clients]);
+
+        return view("company.show",['company' => $company, 'clients'=>$clients, 'clientsCount'=> $clientsCount]);
     }
 
     /**
