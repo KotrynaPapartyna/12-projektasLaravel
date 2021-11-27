@@ -20,7 +20,8 @@ class CreateClientsTable extends Migration
             $table->longText('description');
             $table->unsignedBigInteger('company_id');
 
-            $table->foreign('company_id')->references('id')->on('companies');
+            // kai istrinama kompanija- istrinami ir su kompanija susije klientai
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
 
             $table->timestamps();
         });
