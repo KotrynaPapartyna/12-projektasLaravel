@@ -37,6 +37,7 @@ Route::prefix('clients')->group(function () {
     Route::post('deleteAjax/{client}', 'ClientController@destroyAjax' )->name('client.destroyAjax');
     Route::get('show/{client}', 'ClientController@show')->name('client.show');
     Route::get('showAjax/{client}', 'ClientController@showAjax')->name('client.showAjax');
+    Route::get('searchAjax', 'ClientController@searchAjax') ->name('client.searchAjax');
 
 
 });
@@ -51,6 +52,5 @@ Route::prefix('companies')->group(function () {
     Route::post('delete/{company}', 'CompanyController@destroy' )->name('company.destroy');
     Route::get('show/{company}', 'CompanyController@show')->name('company.show');
     Route::post('destroySelected', 'CompanyController@destroySelected')->name('company.destroySelected');
-
 
 });

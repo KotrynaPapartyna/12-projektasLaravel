@@ -6,19 +6,34 @@
 2. Kliento redagavimo forma isokanciame lange
 3. Show funkcionalumas isokanciame lange x
 --}}
+
+{{-- Paieska --}}
 <div class="container">
+
+    <div class="search-form row">
+        <div class="col-md-8">
+            <button class="test-delete" type="button">Test delete</button>
+            {{-- data-target =  --}}
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createClientModal">
+                Create New Client Modal
+            </button>
+
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#showClientModal">
+                Show Client Modal
+            </button>
+        </div>
+        <div class="col-md-4">
+            <input type="text" class="form-control" id="search-field" name="search-field"/>
+            <button type="button" class="btn btn-primary" id="search-button" >Search</button>
+        </div>
+    </div>
 
 <div class="alerts">
 </div>
 
-    {{-- data-target =  --}}
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createClientModal">
-        Create New Client Modal
-    </button>
+<div class="search-alert">
+</div>
 
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#showClientModal">
-        Show Client Modal
-    </button>
 <table class="clients table table-striped">
     <tr>
         <th>ID</th>
@@ -30,12 +45,12 @@
     </tr>
 
     @foreach ($clients as $client)
-        <tr>
-            <td>{{$client->id}}</td>
-            <td>{{$client->name}}</td>
-            <td>{{$client->surname}}</td>
-            <td>{{$client->description}}</td>
-            <td>{{$client->clientCompany->title}}</td>
+        <tr class="rowClient{{$client->id}}">
+            <td class="colClientId">{{$client->id}}</td>
+            <td class="colClientName">{{$client->name}}</td>
+            <td class="colClientSurname">{{$client->surname}}</td>
+            <td class="colClientDescription">{{$client->description}}</td>
+            <td class="colClientCompanyTitle">{{$client->clientCompany->title}}</td>
             <td>
                 <button type="button" class="btn btn-success show-client" data-clientid='{{$client->id}}'>Show</button>
                 <button type="button" class="btn btn-secondary update-client" data-clientid='{{$client->id}}'>Update</button>
@@ -44,6 +59,8 @@
         </tr>
     @endforeach
 </table>
+
+
 </div>
 <div class="modal fade" id="createClientModal" tabindex="-1" role="dialog" aria-labelledby="createClientModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -212,7 +229,18 @@
                     if($.isEmptyObject(data.error)) {
                         $(".invalid-feedback").css("display", 'none');
                         $("#createClientModal").modal("hide");
-                        $(".clients").append("<tr><td>"+ data.clientId +"</td><td>"+ data.clientName +"</td><td>"+ data.clientSurname +"</td><td>"+ data.clientDescription +"</td><td>"+ data.clientCompany +"</td><td>Actions</td></tr>");
+                        var clientRow = "<tr class='rowClient"+ data.clientId +"'>";
+                            clientRow += "<td class='colClientId'>"+ data.clientId +"</td>";
+                            clientRow += "<td class='colClientName'>"+ data.clientName +"</td>";
+                            clientRow += "<td class='colClientSurname'>"+ data.clientSurname +"</td>";
+                            clientRow += "<td class='colClientDescription'>"+ data.clientDescription +"</td>";
+                            clientRow += "<td class='colClientCompanyTitle'>"+ data.clientCompany +"</td>";
+                            clientRow += "<td>";
+                            clientRow += "<button type='button' class='btn btn-success show-client' data-clientid='"+ data.clientId +"'>Show</button>";
+                            clientRow += "<button type='button' class='btn btn-secondary update-client' data-clientid='"+ data.clientId +"'>Update</button>";
+                            clientRow += "</td>";
+                            clientRow += "</tr>";
+                        $(".clients").append(clientRow);
                         $(".alerts").append("<div class='alert alert-success'>"+ data.success +"</div");
                         $("#clientName").val('');
                         $("#clientSurname").val('');
@@ -230,7 +258,9 @@
                 }
             });
     });
-    $(".show-client").click(function() {
+    //click jinai neseka dinamiskai per javascript sukurtu elementu
+    // $(".show-client").click(function() {
+       $(document).on('click', '.show-client', function() {
        $('#showClientModal').modal('show');
        var clientid = $(this).attr("data-clientid");
        $.ajax({
@@ -247,7 +277,8 @@
             });
        console.log(clientid);
     });
-    $(".update-client").click(function() {
+    // $(".update-client").click(function() {
+        $(document).on('click', '.update-client', function() {
         var clientid = $(this).attr('data-clientid');
         $("#editClientModal").modal("show");
         $.ajax({
@@ -277,6 +308,10 @@
                         $(".invalid-feedback").css("display", 'none');
                         $("#editClientModal").modal("hide");
                         $(".alerts").append("<div class='alert alert-success'>"+ data.success +"</div");
+                        $(".rowClient"+ clientid + " .colClientName").html(data.clientName);
+                        $(".rowClient"+ clientid + " .colClientSurname").html(data.clientSurname);
+                        $(".rowClient"+ clientid + " .colClientDescription").html(data.clientDescription);
+                        $(".rowClient"+ clientid + " .colClientCompanyTitle").html(data.clientCompany);
                     } else {
                         $(".invalid-feedback").css("display", 'none');
                         $.each(data.error, function(key, error){
@@ -289,6 +324,60 @@
                     }
                 }
             });
+    })
+    //kazkokio mygtuko paspaudimu istrinsiu konkretu klienta is dizaino
+    //klienta kurio id yra 3
+    //kazkurio is klientu varda pakeisti i "pakeistas per javascript"
+    // pakeisti ir pavarde
+    $(".test-delete").click(function() {
+        // $(".client8").remove();
+        $(".rowClient3 .colClientName").html("pakeistas per javascript");
+        $(".rowClient3 .colClientSurname").html("pakeistas per javascript pavarde");
+    })
+    // $("#search-button").click(function() {
+      // kad paeiska pradetu veikti tik kai ivedem 3 simbolius
+      // riboti uzklausu kieki
+      $(document).on('input', '#search-field', function() {
+        //yra sekama kas ivedama i input
+        var searchField = $("#search-field").val();
+        $.ajax({
+                type: 'GET',
+                url: '/clients/searchAjax/',
+                data: {searchField: searchField },
+                success: function(data) {
+                    if($.isEmptyObject(data.error)) {
+                        console.log(data.success);
+                        $(".clients").css("display", "block");
+                        $(".search-alert").html("");
+                        $(".search-alert").html(data.success);
+                        $(".clients tbody").html("");
+                        $(".clients tbody").append("<tr><th>ID</th><th>Name</th><th>Surname</th><th>Description</th><th>Company</th><th>Actions</th></tr>");
+                        $.each(data.clients, function(key, client){
+                            //key = laukelio pavadinimas prie kurio ivyko klaida
+                            // $(".ajaxClients").append("<tr><td>"+client.id+"</td><td>" + client.name +"</td></tr>");
+                            var clientRow = "<tr class='rowClient"+ client.id +"'>";
+                            clientRow += "<td class='colClientId'>"+ client.id +"</td>";
+                            clientRow += "<td class='colClientName'>"+ client.name +"</td>";
+                            clientRow += "<td class='colClientSurname'>"+ client.surname +"</td>";
+                            clientRow += "<td class='colClientDescription'>"+ client.description +"</td>";
+                            clientRow += "<td class='colClientCompanyTitle'>"+ client.company_id +"</td>";
+                            clientRow += "<td>";
+                            clientRow += "<button type='button' class='btn btn-success show-client' data-clientid='"+ client.id +"'>Show</button>";
+                            clientRow += "<button type='button' class='btn btn-secondary update-client' data-clientid='"+ client.id +"'>Update</button>";
+                            clientRow += "</td>";
+                            clientRow += "</tr>";
+                            $(".clients tbody").append(clientRow);
+                        });
+                    } else {
+                        $(".clients").css("display", "none");
+                        $(".clients tbody").html("");
+                        $(".search-alert").html("");
+                        $(".search-alert").append(data.error);
+                        // console.log(data.error)
+                    }
+                }
+            });
+        console.log(searchField);
     })
  });
 </script>
